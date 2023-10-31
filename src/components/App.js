@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from "react";
+import React, { Fragment } from "react";
 
 import "../App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -8,6 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 import HeaderMenu from "./layout/HeaderMenu";
 import Alerts from "./layout/Alerts";
 import InvoiceDashboard from "./invoices/Dashboard";
+import InventoryDashboard from "./inventory/InventoryDashboard";
 import Users from "./accounts/users";
 import Groups from "./accounts/groups";
 import Dashboard from "./Dashboard";
@@ -82,7 +83,7 @@ class App extends React.Component {
                       visible={visible}
                       width="thin"
                     >
-                      <SidebarMenu />
+                      <SidebarMenu sidebarToggle={this.closeSideBar} />
                     </Sidebar>
 
                     <Sidebar.Pusher className="main-content">
@@ -93,6 +94,12 @@ class App extends React.Component {
                           <Route
                             path="/"
                             element={<PrivateRoute element={Dashboard} />}
+                          />
+                          <Route
+                            path="/inventory"
+                            element={
+                              <PrivateRoute element={InventoryDashboard} />
+                            }
                           />
                           <Route
                             path="/invoices"
@@ -127,26 +134,17 @@ class App extends React.Component {
                                   <List link inverted>
                                     <List.Item as="a">Sitemap</List.Item>
                                     <List.Item as="a">Contact Us</List.Item>
-                                    <List.Item as="a">
-                                      Religious Ceremonies
-                                    </List.Item>
-                                    <List.Item as="a">Gazebo Plans</List.Item>
                                   </List>
                                 </Grid.Column>
                                 <Grid.Column width={3}>
                                   <Header inverted as="h4" content="Services" />
                                   <List link inverted>
-                                    <List.Item as="a">
-                                      Banana Pre-Order
-                                    </List.Item>
-                                    <List.Item as="a">DNA FAQ</List.Item>
-                                    <List.Item as="a">How To Access</List.Item>
-                                    <List.Item as="a">Favorite X-Men</List.Item>
+                                    <List.Item as="a">FAQ</List.Item>
                                   </List>
                                 </Grid.Column>
                                 <Grid.Column width={7}>
                                   <Header as="h4" inverted>
-                                    Footer Header
+                                    An Application by Brocode Solutions FZ LLC
                                   </Header>
                                   <p>
                                     Extra space for a call to action inside the

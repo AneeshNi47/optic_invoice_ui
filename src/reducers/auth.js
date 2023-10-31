@@ -18,6 +18,7 @@ const initialState = {
   isLoading: false,
   user: null,
   users: [],
+  user_type: null,
 };
 
 // eslint-disable-next-line import/no-anonymous-default-export
@@ -36,6 +37,8 @@ export default function (state = initialState, action) {
         ...action.payload,
         isAuthenticated: true,
         isLoading: false,
+        user: action.payload.user,
+        user_type: action.payload.user.user_type,
       };
     case USER_LOADING:
       return {
@@ -54,6 +57,7 @@ export default function (state = initialState, action) {
         isLoading: false,
         isAuthenticated: true,
         user: action.payload,
+        user_type: action.payload.user_type,
       };
     case LOGOUT_SUCCESS:
     case AUTH_ERROR:
@@ -66,6 +70,7 @@ export default function (state = initialState, action) {
         token: null,
         isLoading: null,
         isAuthenticated: false,
+        user_type: null,
       };
     default:
       return state;

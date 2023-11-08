@@ -7,11 +7,10 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import HeaderMenu from "./layout/HeaderMenu";
 import Alerts from "./layout/Alerts";
-import InvoiceDashboard from "./invoices/Dashboard";
+import InvoiceDashboard from "./invoices/InvoiceDashboard";
 import InventoryDashboard from "./inventory/InventoryDashboard";
-import Users from "./accounts/users";
-import Groups from "./accounts/groups";
 import Dashboard from "./Dashboard";
+import OrganizationDashboard from "./organization/OrganizationDashboard";
 import Register from "./accounts/register";
 import PrivateRoute from "./common/PrivateRoute";
 import Login from "./accounts/login";
@@ -75,7 +74,7 @@ class App extends React.Component {
                   <Sidebar.Pushable as={Segment} className="parent-container">
                     <Sidebar
                       as={Menu}
-                      animation="overlay"
+                      animation="push"
                       icon="labeled"
                       inverted
                       onHide={() => this.closeSideBar()}
@@ -108,12 +107,10 @@ class App extends React.Component {
                             }
                           />
                           <Route
-                            path="/groups"
-                            element={<PrivateRoute element={Groups} />}
-                          />
-                          <Route
-                            path="/users"
-                            element={<PrivateRoute element={Users} />}
+                            path="/organizations"
+                            element={
+                              <PrivateRoute element={OrganizationDashboard} />
+                            }
                           />
                           <Route
                             exact
@@ -124,11 +121,11 @@ class App extends React.Component {
                         </Routes>
                       </Container>
                       <Divider />
-                      <Grid.Row>
-                        <Grid.Column>
-                          <Segment inverted vertical className="footer">
+                      <Grid.Row style={{ padding: 0, margin: 0 }} columns={1}>
+                        <Grid.Column style={{ padding: 0, margin: 0 }}>
+                          <Segment inverted>
                             <Grid divided inverted stackable>
-                              <Grid.Row>
+                              <Grid.Row columns={3}>
                                 <Grid.Column width={3}>
                                   <Header inverted as="h4" content="About" />
                                   <List link inverted>

@@ -6,7 +6,7 @@ import { printInvoice } from "../../actions/other_operations";
 import { GET_INVOICES } from "../../actions/types";
 import { Menu, Icon, Table, Grid, Button, Header } from "semantic-ui-react";
 
-class Invoices extends Component {
+class ListInvoices extends Component {
   static propTypes = {
     invoices: PropTypes.array.isRequired,
     getItems: PropTypes.func.isRequired,
@@ -144,4 +144,4 @@ export default connect(mapStateToProps, {
   getItems,
   deleteItem,
   printInvoice,
-})(Invoices);
+})(ListInvoices);

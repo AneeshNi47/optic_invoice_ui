@@ -32,12 +32,22 @@ export default function (state = initialState, action) {
     case LOGIN_SUCCESS:
     case REGISTER_SUCCESS:
       localStorage.setItem("token", action.payload.token);
+      var organization = null;
+      var user_type = action.payload.user.user_type;
+      if (user_type === "staff") {
+        organization = action.payload.user.staff_details.organization;
+      }
+      if (user_type === "customer") {
+        organization = action.payload.user.customer_details.organization;
+      }
+
       return {
         ...state,
         ...action.payload,
         isAuthenticated: true,
         isLoading: false,
         user: action.payload.user,
+        organization: organization,
         user_type: action.payload.user.user_type,
       };
     case USER_LOADING:

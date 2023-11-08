@@ -6,6 +6,7 @@ import auth from "./auth";
 import customer from "./customer";
 import prescription from "./prescription";
 import inventory from "./inventory";
+import organization from "./organization";
 
 export default combineReducers({
   invoiceReducer: invoices,
@@ -15,4 +16,5 @@ export default combineReducers({
   customerReducer: customer,
   inventoryReducer: inventory,
   prescriptionReducer: prescription,
+  organizationReducer: organization,
 });

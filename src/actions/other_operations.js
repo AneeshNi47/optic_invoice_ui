@@ -1,5 +1,4 @@
 import axios from "axios";
-import { GET_ERRORS, USER_ORGANIZATION } from "./types";
 import { createMessage, returnErrors } from "./messages";
 import { tokenConfig } from "./auth";
 import { BASE_URL } from "./types";
@@ -28,3 +27,44 @@ export const printInvoice = (modelName, invoice_id, invoice_number) => {
     });
   };
 };
+
+export const getOrganization =
+  (modelName, actionType) => (dispatch, getState) => {
+    console.log("getting organization");
+    axios
+      .get(`${BASE_URL}/api/${modelName}`, tokenConfig(getState))
+      .then((res) => {
+        dispatch(
+          createMessage({ itemUpdated: `${modelName} Successfully Updated` })
+        );
+        dispatch({
+          type: actionType,
+          payload: res.data,
+        });
+      })
+      .catch((err) =>
+        dispatch(returnErrors(err.response.data, err.response.status))
+      );
+  };
+
+export const deactivateOrganization =
+  (modelName, actionType, itemId, item) => (dispatch, getState) => {
+    axios
+      .put(
+        `${BASE_URL}/api/${modelName}/${itemId}/`,
+        item,
+        tokenConfig(getState)
+      )
+      .then((res) => {
+        dispatch(
+          createMessage({ itemUpdated: `${modelName} Successfully Updated` })
+        );
+        dispatch({
+          type: actionType,
+          payload: res.data,
+        });
+      })
+      .catch((err) =>
+        dispatch(returnErrors(err.response.data, err.response.status))
+      );
+  };

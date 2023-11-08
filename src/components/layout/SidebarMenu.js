@@ -7,7 +7,7 @@ export class SidebarMenu extends Component {
   render() {
     const super_admin_menu = (
       <>
-        <Link to="/invoices">
+        <Link to="/organizations">
           <Menu.Item>
             <Icon name="file alternate outline" />
             Organization
@@ -23,7 +23,7 @@ export class SidebarMenu extends Component {
     );
     const org_admin_menu = (
       <>
-        <Link to="/invoices">
+        <Link to="/invoices" onClick={() => this.props.sidebarToggle()}>
           <Menu.Item>
             <Icon name="file alternate outline" />
             Invoices
@@ -57,13 +57,13 @@ export class SidebarMenu extends Component {
     );
     const org_staff_menu = (
       <>
-        <Link to="/invoices">
+        <Link to="/invoices" onClick={() => this.props.sidebarToggle()}>
           <Menu.Item>
             <Icon name="file alternate outline" />
             Invoices
           </Menu.Item>
         </Link>
-        <Link to="/inventory">
+        <Link to="/inventory" onClick={() => this.props.sidebarToggle()}>
           <Menu.Item>
             <Icon name="boxes" />
             Inventory

@@ -9,8 +9,10 @@ import {
   AUTH_ERROR,
   REGISTER_FAIL,
   GET_USERS,
+  GET_USER_ORGANIZATION,
 } from "./types";
 import { returnErrors } from "./messages";
+import { getOrganization } from "./other_operations";
 import { BASE_URL } from "./types";
 
 export const loadUser = () => (dispatch, getState) => {
@@ -18,7 +20,6 @@ export const loadUser = () => (dispatch, getState) => {
   axios
     .get(`${BASE_URL}/api/auth/user`, tokenConfig(getState))
     .then((res) => {
-      console.log(res.data);
       dispatch({
         type: USER_LOADED,
         payload: res.data,
@@ -33,7 +34,6 @@ export const loadUser = () => (dispatch, getState) => {
 };
 
 export const get_users = () => (dispatch, getState) => {
-  console.log("get users");
   axios
     .get(`${BASE_URL}/api/auth/non_super_users`, tokenConfig(getState))
     .then((res) => {
@@ -92,7 +92,6 @@ export const loginUser = (username, password) => (dispatch) => {
   axios
     .post(`${BASE_URL}/api/auth/login`, body, config)
     .then((res) => {
-      console.log(res.data);
       dispatch({
         type: LOGIN_SUCCESS,
         payload: res.data,

@@ -30,6 +30,8 @@ export default function (state = initialState, action) {
         search_results.push({
           key: result.id,
           value: result,
+          title: `${result.first_name} ${result.phone}`,
+          descriptions: `${result.first_name} ${result.phone}`,
           text: `${result.first_name} ${result.phone}`,
         })
       );

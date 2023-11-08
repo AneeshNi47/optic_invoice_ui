@@ -17,10 +17,10 @@ export const getItems = (modelName, actionType) => (dispatch, getState) => {
       dispatch(returnErrors(err.response.data, err.response.status))
     );
 };
+
 export const searchItems =
-  (modelName, objectName, searchKey, searchValue, actionType) =>
-  (dispatch, getState) => {
-    console.log(`searchin ${objectName}`);
+  (modelName, searchKey, searchValue, actionType) => (dispatch, getState) => {
+    console.log(`searchin ${modelName}`);
     axios
       .get(
         `${BASE_URL}/api/${modelName}?${searchKey}=${searchValue}`,

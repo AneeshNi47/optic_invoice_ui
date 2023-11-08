@@ -1,16 +1,16 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import Invoices from "./Invoices";
-import InvoiceForm from "./form";
+import ListOrganization from "./ListOrganization";
+import AddOrganization from "./AddOrganization";
 import { loadUser, get_users } from "../../actions/auth";
 import { Modal } from "semantic-ui-react";
 
-class InvoiceDashboard extends Component {
+class OrganizationDashboard extends Component {
   state = {
-    addLeadForm: false,
+    addOrganizationForm: false,
     formOpenType: "view",
-    edit_lead_data: null,
+    editOrganizationData: null,
   };
 
   static propTypes = {
@@ -18,26 +18,31 @@ class InvoiceDashboard extends Component {
     get_users: PropTypes.func.isRequired,
   };
   onOpenForm = (data) =>
-    this.setState({ addLeadForm: true, edit_lead_data: data });
+    this.setState({ addOrganizationForm: true, editOrganizationData: data });
 
-  handleClose = () => this.setState({ addLeadForm: false });
+  handleClose = () => this.setState({ addOrganizationForm: false });
   setFormType = (type) =>
     this.setState({
       formOpenType: type,
     });
   render() {
-    const { addLeadForm, edit_lead_data, formOpenType } = this.state;
+    const { addOrganizationForm, editOrganizationData, formOpenType } =
+      this.state;
     return (
       <>
-        <Invoices
+        <ListOrganization
           openForm={this.onOpenForm}
           setFormType={(type) => this.setFormType(type)}
         />
 
-        <Modal size="large" open={addLeadForm} onClose={this.handleClose}>
-          <InvoiceForm
+        <Modal
+          size="small"
+          open={addOrganizationForm}
+          onClose={this.handleClose}
+        >
+          <AddOrganization
             closeForm={this.handleClose}
-            data={edit_lead_data}
+            data={editOrganizationData}
             formOpenType={formOpenType}
           />
         </Modal>
@@ -50,5 +55,5 @@ const mapStateToProps = (state) => ({
 });
 
 export default connect(mapStateToProps, { loadUser, get_users })(
-  InvoiceDashboard
+  OrganizationDashboard
 );

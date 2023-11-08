@@ -20,9 +20,19 @@ export default function (state = initialState, action) {
         items: action.payload,
       };
     case SEARCH_INVENTORY:
+      let search_results = [];
+      action.payload.map((result) =>
+        search_results.push({
+          key: result.id,
+          value: result,
+          title: `${result.name} ${result.description}`,
+          descriptions: `${result.first_name} ${result.phone}`,
+          text: `${result.first_name} ${result.phone}`,
+        })
+      );
       return {
         ...state,
-        item_search_results: action.payload,
+        item_search_results: search_results,
       };
     case ADD_ITEM:
       return {

@@ -16,6 +16,9 @@ import {
 } from "../../actions/types";
 import {
   Table,
+  Select,
+  Statistic,
+  Radio,
   Form,
   Search,
   Grid,
@@ -23,12 +26,15 @@ import {
   Modal,
   Button,
   Header,
+  Icon,
 } from "semantic-ui-react";
 
 export class AddInvoice extends Component {
   state = {
-    discount_type: "percentage",
-    discount_percentage: 0,
+    selectedCustomer: false,
+    editCustomer: true,
+    isPercentage: false,
+    discount_percentage: 0.0,
     searchValue: "",
     searchItemValue: "",
     loading: false,
@@ -51,19 +57,19 @@ export class AddInvoice extends Component {
       gender: "",
     },
     prescription: {
-      left_sphere: "",
-      right_sphere: "",
-      left_cylinder: "",
-      right_cylinder: "",
-      left_axis: "",
-      right_axis: "",
-      left_prism: "",
-      right_prism: "",
-      left_add: "",
-      right_add: "",
-      left_ipd: "",
-      right_ipd: "",
-      pupillary_distance: "",
+      left_sphere: null,
+      right_sphere: null,
+      left_cylinder: null,
+      right_cylinder: null,
+      left_axis: null,
+      right_axis: null,
+      left_prism: null,
+      right_prism: null,
+      left_add: null,
+      right_add: null,
+      left_ipd: null,
+      right_ipd: null,
+      pupillary_distance: null,
     },
     prescription_name: {
       sphere: "SPH",
@@ -96,8 +102,11 @@ export class AddInvoice extends Component {
       this.props.get_organization();
     }
     this.props.getItems("inventory", LIST_ITEMS);
+    const today = new Date();
+    this.setState({ date: today.toISOString().substr(0, 10) });
   }
 
+  onChange = (e) => this.setState({ [e.target.name]: e.target.value });
   toggle_discount_type = (e) => {};
   handleAddItem = () => {
     const { selectedItem, items } = this.state;
@@ -166,6 +175,8 @@ export class AddInvoice extends Component {
   selectCustomerFromSearch = (e, data) => {
     const result_customer = data.result.value;
     this.setState({
+      selectedCustomer: true,
+      editCustomer: false,
       customer: {
         id: result_customer.id,
         phone: result_customer.phone,
@@ -195,29 +206,72 @@ export class AddInvoice extends Component {
     }
   };
 
-  onChange = (e) => this.setState({ [e.target.name]: e.target.value });
-
   recalculateTotal = () => {
-    const { items, discount, advance } = this.state;
+    const { items, discount, discount_percentage, isPercentage, advance } =
+      this.state;
     const itemsTotal = items.reduce(
       (total, item) => total + parseFloat(item.sale_value),
       0
     );
-    const discountAmount = parseFloat(discount) || 0; // handle the case where discount is empty or not a number
-    const totalWithDiscount = itemsTotal - discountAmount - advance;
+    let discountAmount = parseFloat(discount) || 0;
+    let totalWithDiscount = itemsTotal;
 
-    this.setState({ total_value: totalWithDiscount });
+    if (isPercentage) {
+      // Calculate discount based on percentage
+      discountAmount = (discount_percentage / 100) * itemsTotal;
+      totalWithDiscount = itemsTotal - discountAmount;
+    } else {
+      // Discount is a flat value
+      totalWithDiscount = itemsTotal - discountAmount;
+    }
+
+    // Subtract any advance payments
+    totalWithDiscount -= parseFloat(advance) || 0;
+
+    this.setState({ total_value: totalWithDiscount.toFixed(2) });
+  };
+
+  toggleDiscountType = () => {
+    const itemsTotal = this.state.items.reduce(
+      (total, item) => total + parseFloat(item.sale_value),
+      0
+    );
+    this.setState(
+      (prevState) => ({
+        isPercentage: !prevState.isPercentage,
+      }),
+      () => {
+        if (this.state.isPercentage) {
+          // Convert flat discount to percentage
+          const discountPercentage = (this.state.discount / itemsTotal) * 100;
+          this.setState({
+            discount_percentage: discountPercentage.toFixed(2),
+          });
+        } else {
+          // Convert percentage discount to flat value
+          const discountValue =
+            (this.state.discount_percentage / 100) * itemsTotal;
+          this.setState({
+            discount: discountValue.toFixed(2),
+          });
+        }
+        this.recalculateTotal();
+      }
+    );
   };
 
   onDiscountChange = (e) => {
-    const newDiscount = e.target.value;
+    const { name, value } = e.target;
+    let discountValue = value;
 
-    // Set the new discount
-    this.setState({ discount: newDiscount }, () => {
-      // Recalculate the total price after the state has been updated
-      this.recalculateTotal();
-    });
+    if (name === "discount") {
+      this.setState({ discount: discountValue });
+    } else if (name === "discount_percentage") {
+      this.setState({ discount_percentage: discountValue });
+    }
+    this.recalculateTotal();
   };
+
   onAdvanceChange = (e) => {
     const newAdvance = e.target.value;
 
@@ -247,20 +301,45 @@ export class AddInvoice extends Component {
     this.setState((prevState) => ({
       prescription: {
         ...prevState.prescription,
-        [`${side}_${field}`]: value,
+        [`${side}_${field}`]: parseFloat(value),
       },
     }));
   };
   onSubmit = (e) => {
     e.preventDefault();
-    const invoice = this.state;
+    const {
+      customer,
+      prescription,
+      items,
+      remarks,
+      delivery_date,
+      date,
+      advance,
+      discount,
+    } = this.state;
+    var modified_customer = customer;
+    if (modified_customer.id === null) {
+      delete modified_customer.id;
+    }
+    var invoice = {
+      customer: modified_customer,
+      prescription: prescription,
+      delivery_date: delivery_date,
+      date: date,
+      remarks: remarks,
+      advance: advance,
+      discount: discount,
+      items: items.map((item) => item.id),
+    };
     console.log(invoice);
+    this.props.addItem("invoice/create", ADD_INVOICE, invoice);
     this.props.closeForm();
   };
 
   render() {
     const {
       customer,
+      editCustomer,
       loading,
       searchValue,
       customer_options,
@@ -269,6 +348,7 @@ export class AddInvoice extends Component {
       is_taxable,
       delivery_date,
       remarks,
+      isPercentage,
       advance,
       discount,
       discount_percentage,
@@ -277,6 +357,8 @@ export class AddInvoice extends Component {
       prescription,
       searchItemValue,
       prescription_name,
+      selectedCustomer,
+      editModal,
     } = this.state;
     const { organization } = this.props;
     const prescriptionFields = [
@@ -287,8 +369,40 @@ export class AddInvoice extends Component {
       "add",
       "ipd",
     ];
+    const genderOptions = [
+      { key: "M", value: "M", text: "Male" },
+      { key: "F", value: "F", text: "Female" },
+      { key: "O", value: "O", text: "Other" },
+      { key: "N", value: "N", text: "Prefer not to say" },
+    ];
     return (
       <>
+        <Modal
+          dimmer={"blurring"}
+          open={editModal}
+          onClose={() => this.setState({ editModal: false })}
+        >
+          <Modal.Header>Edit Existing User?</Modal.Header>
+          <Modal.Content>
+            You Are about to edit an existing user, do you want to continue?
+          </Modal.Content>
+          <Modal.Actions>
+            <Button
+              negative
+              onClick={() => this.setState({ editModal: false })}
+            >
+              No
+            </Button>
+            <Button
+              positive
+              onClick={() =>
+                this.setState({ editCustomer: true, editModal: false })
+              }
+            >
+              Yes
+            </Button>
+          </Modal.Actions>
+        </Modal>
         <Modal.Content>
           <Form>
             <Grid>
@@ -302,7 +416,7 @@ export class AddInvoice extends Component {
                 </Grid.Column>
               </Grid.Row>
 
-              <Grid.Row columns={1}>
+              <Grid.Row columns={2}>
                 <Grid.Column>
                   <Search
                     loading={loading}
@@ -313,12 +427,80 @@ export class AddInvoice extends Component {
                     value={searchValue}
                   />
                 </Grid.Column>
+                <Grid.Column>
+                  <Form.Input
+                    type="date"
+                    fluid
+                    icon="calendar"
+                    iconPosition="left"
+                    name="date"
+                    label="Date"
+                    value={date}
+                    onChange={this.onChange}
+                    placeholder="Date"
+                  />
+                </Grid.Column>
               </Grid.Row>
-              <Grid.Row columns={2} textAlign="center">
+              {selectedCustomer ? (
+                <Grid.Row>
+                  <Grid.Column>
+                    <Button
+                      color="blue"
+                      animated="vertical"
+                      onClick={() => this.setState({ editModal: true })}
+                    >
+                      <Button.Content hidden>User</Button.Content>
+                      <Button.Content visible>
+                        <Icon name="edit" />
+                      </Button.Content>
+                    </Button>
+                    <Button
+                      color="red"
+                      animated="vertical"
+                      onClick={() =>
+                        this.setState({
+                          selectedCustomer: false,
+                          editCustomer: true,
+                          customer: {
+                            id: null,
+                            phone: "",
+                            email: "",
+                            first_name: "",
+                            last_name: "",
+                            theme_mode: "S",
+                            gender: "",
+                          },
+                        })
+                      }
+                    >
+                      <Button.Content hidden>User</Button.Content>
+                      <Button.Content visible>
+                        <Icon name="trash" />
+                      </Button.Content>
+                    </Button>
+                  </Grid.Column>
+                </Grid.Row>
+              ) : null}
+              <Grid.Row columns={3} textAlign="left">
+                <Grid.Column>
+                  <Select
+                    label="Gender"
+                    clearable
+                    icon="dropdown"
+                    placeholder="Gender"
+                    name="customer.gender"
+                    value={customer.gender}
+                    onChange={this.handleNestedChange}
+                    fluid
+                    options={genderOptions}
+                  />
+                </Grid.Column>
                 <Grid.Column>
                   <Form.Input
                     type="text"
                     fluid
+                    disabled={!editCustomer}
+                    label="Phone"
                     name="customer.phone"
                     value={customer.phone}
                     onChange={this.handleNestedChange}
@@ -329,6 +511,8 @@ export class AddInvoice extends Component {
                   <Form.Input
                     type="text"
                     fluid
+                    disabled={!editCustomer}
+                    label="Email"
                     name="customer.email"
                     value={customer.email}
                     onChange={this.handleNestedChange}
@@ -337,11 +521,13 @@ export class AddInvoice extends Component {
                 </Grid.Column>
               </Grid.Row>
 
-              <Grid.Row columns={2} textAlign="center">
+              <Grid.Row columns={2} textAlign="left">
                 <Grid.Column>
                   <Form.Input
                     type="text"
                     fluid
+                    disabled={!editCustomer}
+                    label="First Name"
                     name="customer.first_name"
                     value={customer.first_name}
                     onChange={this.handleNestedChange}
@@ -352,6 +538,8 @@ export class AddInvoice extends Component {
                   <Form.Input
                     type="text"
                     fluid
+                    label="Last Name"
+                    disabled={!editCustomer}
                     name="customer.last_name"
                     value={customer.last_name}
                     onChange={this.handleNestedChange}
@@ -402,28 +590,6 @@ export class AddInvoice extends Component {
                   </Table>
                 </Grid.Column>
               </Grid.Row>
-              <Grid.Row columns={2} textAlign="center">
-                <Grid.Column>
-                  <Form.Input
-                    type="date"
-                    fluid
-                    name="date"
-                    value={date}
-                    onChange={this.onChange}
-                    placeholder="Date"
-                  />
-                </Grid.Column>
-                <Grid.Column>
-                  <Form.Input
-                    type="date"
-                    fluid
-                    name="delivery_date"
-                    value={delivery_date}
-                    onChange={this.onChange}
-                    placeholder="Delivery Date"
-                  />
-                </Grid.Column>
-              </Grid.Row>
 
               <Grid.Row columns={1}>
                 <Grid.Column>
@@ -439,7 +605,7 @@ export class AddInvoice extends Component {
               </Grid.Row>
               <Grid.Row columns={1}>
                 <Grid.Column>
-                  <Table celled>
+                  <Table celled textAlign="center">
                     <Table.Header>
                       <Table.Row>
                         <Table.HeaderCell>Item</Table.HeaderCell>
@@ -480,35 +646,56 @@ export class AddInvoice extends Component {
                   </Table>
                 </Grid.Column>
               </Grid.Row>
-
-              <Grid.Row columns={4} textAlign="center">
+              <Grid.Row columns={4} textAlign="right">
                 <Grid.Column></Grid.Column>
                 <Grid.Column></Grid.Column>
                 <Grid.Column>
-                  <Form.Input
-                    type="number"
-                    fluid
-                    name="discount"
-                    value={discount}
-                    onChange={this.onDiscountChange}
-                    placeholder="Discount"
+                  <Radio
+                    toggle
+                    label={this.state.isPercentage ? "00" : "%"}
+                    checked={this.state.isPercentage}
+                    onChange={this.toggleDiscountType}
                   />
                 </Grid.Column>
                 <Grid.Column>
-                  <Form.Input
-                    type="number"
-                    fluid
-                    name="discount_percentage"
-                    value={discount_percentage}
-                    onChange={this.onDiscountChange}
-                    placeholder="Discount"
-                  />
+                  {this.state.isPercentage ? (
+                    <>
+                      <Form.Input
+                        label="Discount Percentage"
+                        type="number"
+                        fluid
+                        name="discount_percentage"
+                        value={discount_percentage}
+                        onChange={this.onDiscountChange}
+                        placeholder="Discount Percentage"
+                        disabled={!isPercentage} // Disable if value is active
+                      />{" "}
+                      %
+                    </>
+                  ) : (
+                    <>
+                      <Form.Input
+                        label="Discount Value"
+                        type="number"
+                        fluid
+                        name="discount"
+                        value={discount}
+                        onChange={this.onDiscountChange}
+                        placeholder="Discount Value"
+                        visible={isPercentage} // Disable if percentage is active
+                      />{" "}
+                      AED
+                    </>
+                  )}
                 </Grid.Column>
               </Grid.Row>
-              <Grid.Row columns={2} textAlign="center">
+              <Grid.Row columns={4} textAlign="right">
+                <Grid.Column></Grid.Column>
+                <Grid.Column></Grid.Column>
                 <Grid.Column></Grid.Column>
                 <Grid.Column>
                   <Form.Input
+                    label="Advance"
                     type="number"
                     fluid
                     name="advance"
@@ -518,28 +705,37 @@ export class AddInvoice extends Component {
                   />
                 </Grid.Column>
               </Grid.Row>
-              <Grid.Row columns={2} textAlign="center">
+              <Grid.Row columns={2} textAlign="right">
                 <Grid.Column></Grid.Column>
                 <Grid.Column>
-                  <Form.Input
-                    type="number"
-                    fluid
-                    disabled
-                    label="Grand Total"
-                    name="total_value"
-                    value={total_value}
-                    placeholder="0.0"
-                  />
+                  <Statistic size="mini">
+                    <Statistic.Value>
+                      AED {"   "}
+                      {total_value}
+                    </Statistic.Value>
+                    <Statistic.Label>Total Value</Statistic.Label>
+                  </Statistic>
                 </Grid.Column>
               </Grid.Row>
 
-              <Grid.Row columns={1}>
+              <Grid.Row columns={2}>
                 <Grid.Column>
                   <Form.TextArea
                     name="remarks"
                     value={remarks}
                     onChange={this.onChange}
                     placeholder="Remarks"
+                  />
+                </Grid.Column>
+                <Grid.Column>
+                  <Form.Input
+                    type="date"
+                    fluid
+                    label="Delivery Date"
+                    name="delivery_date"
+                    value={delivery_date}
+                    onChange={this.onChange}
+                    placeholder="Delivery Date"
                   />
                 </Grid.Column>
               </Grid.Row>

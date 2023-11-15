@@ -61,7 +61,6 @@ export default function (state = initialState, action) {
         users: action.payload,
       };
     case USER_LOADED:
-      console.log(action.payload);
       return {
         ...state,
         isLoading: false,

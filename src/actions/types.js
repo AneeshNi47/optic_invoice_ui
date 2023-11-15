@@ -25,6 +25,7 @@ export const WS_URL = process.env.REACT_APP_WS_URL;
 
 export const LIST_INVOICES = "LIST_INVOICES";
 export const GET_INVOICES = "GET_INVOICES";
+export const GET_INVOICE_PAYMENTS = "GET_INVOICE_PAYMENTS";
 export const ADD_INVOICE = "ADD_INVOICE";
 export const UPDATE_INVOICE = "UPDATE_INVOICE";
 export const DELETE_INVOICE = "DELETE_INVOICE";

@@ -9,6 +9,7 @@ import HeaderMenu from "./layout/HeaderMenu";
 import Alerts from "./layout/Alerts";
 import InvoiceDashboard from "./invoices/InvoiceDashboard";
 import InventoryDashboard from "./inventory/InventoryDashboard";
+import CustomerDashboard from "./customers/CustomerDashboard";
 import Dashboard from "./Dashboard";
 import OrganizationDashboard from "./organization/OrganizationDashboard";
 import Register from "./accounts/register";
@@ -110,6 +111,12 @@ class App extends React.Component {
                             path="/organizations"
                             element={
                               <PrivateRoute element={OrganizationDashboard} />
+                            }
+                          />
+                          <Route
+                            path="/customers"
+                            element={
+                              <PrivateRoute element={CustomerDashboard} />
                             }
                           />
                           <Route

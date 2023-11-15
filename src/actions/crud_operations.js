@@ -67,6 +67,7 @@ export const addItem =
     axios
       .post(`${BASE_URL}/api/${modelName}/`, item, tokenConfig(getState))
       .then((res) => {
+        console.log(res);
         dispatch(
           createMessage({ itemAdded: `${modelName} Successfully Added` })
         );

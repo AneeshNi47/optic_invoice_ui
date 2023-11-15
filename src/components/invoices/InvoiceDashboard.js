@@ -3,41 +3,85 @@ import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import ListInvoices from "./ListInvoices";
 import AddInvoice from "./AddInvoice";
+import { AddInvoicePayment } from "../invoicePayments/AddInvoicePayment";
+import ListInvoicePayments from "../invoicePayments/ListInvoicePayments";
 import { loadUser, get_users } from "../../actions/auth";
+import { addItem } from "../../actions/crud_operations";
 import { Modal } from "semantic-ui-react";
 
 class InvoiceDashboard extends Component {
   state = {
     addLeadForm: false,
+    addPaymentForm: false,
+    listPaymentsModal: false,
     formOpenType: "view",
-    edit_lead_data: null,
+    invoice_data: null,
   };
 
   static propTypes = {
     user: PropTypes.object.isRequired,
     get_users: PropTypes.func.isRequired,
+    addItem: PropTypes.func.isRequired,
   };
   onOpenForm = (data) =>
-    this.setState({ addLeadForm: true, edit_lead_data: data });
+    this.setState({ addLeadForm: true, invoice_data: data });
+  onOpenPaymentList = (data) =>
+    this.setState({ listPaymentsModal: true, invoice_data: data });
+  onOpenPaymentForm = (data) =>
+    this.setState({ addPaymentForm: true, invoice_data: data });
 
   handleClose = () => this.setState({ addLeadForm: false });
+  handlePaymentListClose = () => this.setState({ listPaymentsModal: false });
+  handlePaymentFormClose = () => this.setState({ addPaymentForm: false });
+
   setFormType = (type) =>
     this.setState({
       formOpenType: type,
     });
   render() {
-    const { addLeadForm, edit_lead_data, formOpenType } = this.state;
+    const {
+      addLeadForm,
+      addPaymentForm,
+      invoice_data,
+      formOpenType,
+      listPaymentsModal,
+    } = this.state;
     return (
       <>
         <ListInvoices
           openForm={this.onOpenForm}
+          openPaymentList={this.openPaymentList}
+          onOpenPaymentForm={(data) => this.onOpenPaymentForm(data)}
           setFormType={(type) => this.setFormType(type)}
         />
 
-        <Modal size="large" open={addLeadForm} onClose={this.handleClose}>
+        <Modal size="fullscreen" open={addLeadForm} onClose={this.handleClose}>
           <AddInvoice
             closeForm={this.handleClose}
-            data={edit_lead_data}
+            data={invoice_data}
+            formOpenType={formOpenType}
+          />
+        </Modal>
+        <Modal
+          size="small"
+          open={addPaymentForm}
+          onClose={this.handlePaymentFormClose}
+        >
+          <AddInvoicePayment
+            closeForm={this.handleClose}
+            data={invoice_data}
+            formOpenType={formOpenType}
+            addItem={this.props.addItem}
+          />
+        </Modal>
+        <Modal
+          size="large"
+          open={listPaymentsModal}
+          onClose={this.handlePaymentListClose}
+        >
+          <ListInvoicePayments
+            closeForm={this.handleClose}
+            data={invoice_data}
             formOpenType={formOpenType}
           />
         </Modal>
@@ -49,6 +93,6 @@ const mapStateToProps = (state) => ({
   user: state.authReducer.user,
 });
 
-export default connect(mapStateToProps, { loadUser, get_users })(
+export default connect(mapStateToProps, { loadUser, get_users, addItem })(
   InvoiceDashboard
 );

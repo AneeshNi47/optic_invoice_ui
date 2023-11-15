@@ -16,13 +16,14 @@ import {
 } from "../../actions/types";
 import {
   Table,
-  Select,
+  Input,
+  Segment,
+  Placeholder,
   Statistic,
   Radio,
   Form,
   Search,
   Grid,
-  Image,
   Modal,
   Button,
   Header,
@@ -331,7 +332,6 @@ export class AddInvoice extends Component {
       discount: discount,
       items: items.map((item) => item.id),
     };
-    console.log(invoice);
     this.props.addItem("invoice/create", ADD_INVOICE, invoice);
     this.props.closeForm();
   };
@@ -405,87 +405,108 @@ export class AddInvoice extends Component {
         </Modal>
         <Modal.Content>
           <Form>
-            <Grid>
+            <Grid padded>
               <Grid.Row columns={1}>
                 <Grid.Column textAlign="center">
                   {organization ? (
-                    <Header size="huge">{organization.name}</Header>
+                    <Header as="h2" color="blue">
+                      {organization.name}
+                    </Header>
                   ) : (
-                    <Image src="https://react.semantic-ui.com/images/wireframe/paragraph.png" />
+                    <Placeholder>
+                      <Placeholder.Image />
+                    </Placeholder>
                   )}
                 </Grid.Column>
               </Grid.Row>
 
               <Grid.Row columns={2}>
                 <Grid.Column>
-                  <Search
-                    loading={loading}
-                    placeholder="Search..."
-                    onResultSelect={this.selectCustomerFromSearch}
-                    onSearchChange={this.onSearchChange}
-                    results={customer_options}
-                    value={searchValue}
-                  />
+                  <Segment.Group horizontal>
+                    <Segment>
+                      <Search
+                        loading={loading}
+                        placeholder="Search..."
+                        onResultSelect={this.selectCustomerFromSearch}
+                        onSearchChange={this.onSearchChange}
+                        results={customer_options}
+                        value={searchValue}
+                      />
+                    </Segment>
+                    <Segment>
+                      {/* Conditional Display for Selected Customer */}
+                      {selectedCustomer ? (
+                        <Grid.Row>
+                          <Grid.Column>
+                            <Button.Group>
+                              <Button
+                                color="blue"
+                                animated="vertical"
+                                onClick={() =>
+                                  this.setState({ editModal: true })
+                                }
+                              >
+                                <Button.Content hidden>Edit</Button.Content>
+                                <Button.Content visible>
+                                  <Icon name="edit" />
+                                </Button.Content>
+                              </Button>
+                              <Button.Or />
+                              <Button
+                                color="red"
+                                animated="vertical"
+                                onClick={() =>
+                                  this.setState({
+                                    selectedCustomer: false,
+                                    editCustomer: true,
+                                    customer: {
+                                      id: null,
+                                      phone: "",
+                                      email: "",
+                                      first_name: "",
+                                      last_name: "",
+                                      theme_mode: "S",
+                                      gender: "",
+                                    },
+                                  })
+                                }
+                              >
+                                <Button.Content hidden>Delete</Button.Content>
+                                <Button.Content visible>
+                                  <Icon name="trash" />
+                                </Button.Content>
+                              </Button>
+                            </Button.Group>
+                          </Grid.Column>
+                        </Grid.Row>
+                      ) : null}
+                    </Segment>
+                  </Segment.Group>
                 </Grid.Column>
                 <Grid.Column>
-                  <Form.Input
-                    type="date"
-                    fluid
-                    icon="calendar"
-                    iconPosition="left"
-                    name="date"
-                    label="Date"
-                    value={date}
-                    onChange={this.onChange}
-                    placeholder="Date"
-                  />
+                  <Segment>
+                    <Form.Input
+                      type="date"
+                      fluid
+                      icon="calendar"
+                      iconPosition="left"
+                      name="date"
+                      label="Date"
+                      value={date}
+                      onChange={this.onChange}
+                      placeholder="Date"
+                    />
+                  </Segment>
                 </Grid.Column>
               </Grid.Row>
-              {selectedCustomer ? (
-                <Grid.Row>
-                  <Grid.Column>
-                    <Button
-                      color="blue"
-                      animated="vertical"
-                      onClick={() => this.setState({ editModal: true })}
-                    >
-                      <Button.Content hidden>User</Button.Content>
-                      <Button.Content visible>
-                        <Icon name="edit" />
-                      </Button.Content>
-                    </Button>
-                    <Button
-                      color="red"
-                      animated="vertical"
-                      onClick={() =>
-                        this.setState({
-                          selectedCustomer: false,
-                          editCustomer: true,
-                          customer: {
-                            id: null,
-                            phone: "",
-                            email: "",
-                            first_name: "",
-                            last_name: "",
-                            theme_mode: "S",
-                            gender: "",
-                          },
-                        })
-                      }
-                    >
-                      <Button.Content hidden>User</Button.Content>
-                      <Button.Content visible>
-                        <Icon name="trash" />
-                      </Button.Content>
-                    </Button>
-                  </Grid.Column>
-                </Grid.Row>
-              ) : null}
+
+              {/* Customer Details Input - Gender, Phone, Email */}
               <Grid.Row columns={3} textAlign="left">
                 <Grid.Column>
-                  <Select
+                  <Form.Select
                     label="Gender"
                     clearable
+                    disabled={!editCustomer}
                     icon="dropdown"
                     placeholder="Gender"
                     name="customer.gender"
@@ -521,6 +542,7 @@ export class AddInvoice extends Component {
                 </Grid.Column>
               </Grid.Row>
 
+              {/* First Name and Last Name Inputs */}
               <Grid.Row columns={2} textAlign="left">
                 <Grid.Column>
                   <Form.Input
@@ -538,8 +560,8 @@ export class AddInvoice extends Component {
                   <Form.Input
                     type="text"
                     fluid
-                    label="Last Name"
                     disabled={!editCustomer}
+                    label="Last Name"
                     name="customer.last_name"
                     value={customer.last_name}
                     onChange={this.handleNestedChange}
@@ -548,14 +570,17 @@ export class AddInvoice extends Component {
                 </Grid.Column>
               </Grid.Row>
 
+              {/* Prescription Table */}
               <Grid.Row columns={1}>
                 <Grid.Column>
-                  <Table celled>
+                  <Table celled structured>
                     <Table.Header>
                       <Table.Row>
-                        <Table.HeaderCell />
+                        <Table.HeaderCell rowSpan="2" textAlign="center">
+                          Eye
+                        </Table.HeaderCell>
                         {prescriptionFields.map((field) => (
-                          <Table.HeaderCell key={field}>
+                          <Table.HeaderCell key={field} textAlign="center">
                             {prescription_name[field]}
                           </Table.HeaderCell>
                         ))}
@@ -565,10 +590,12 @@ export class AddInvoice extends Component {
                     <Table.Body>
                       {["left", "right"].map((side) => (
                         <Table.Row key={side}>
-                          <Table.Cell>{prescription_name[side]}</Table.Cell>
+                          <Table.Cell textAlign="center">
+                            {prescription_name[side]}
+                          </Table.Cell>
                           {prescriptionFields.map((field) => (
                             <Table.Cell key={field}>
-                              <Form.Input
+                              <Input
                                 fluid
                                 type="number"
                                 step=".01"
@@ -591,6 +618,7 @@ export class AddInvoice extends Component {
                 </Grid.Column>
               </Grid.Row>
 
+              {/* Item Search */}
               <Grid.Row columns={1}>
                 <Grid.Column>
                   <Search
@@ -603,6 +631,8 @@ export class AddInvoice extends Component {
                   />
                 </Grid.Column>
               </Grid.Row>
+
+              {/* Items Table */}
               <Grid.Row columns={1}>
                 <Grid.Column>
                   <Table celled textAlign="center">
@@ -646,10 +676,11 @@ export class AddInvoice extends Component {
                   </Table>
                 </Grid.Column>
               </Grid.Row>
+
+              {/* Discount and Advance Inputs */}
               <Grid.Row columns={4} textAlign="right">
-                <Grid.Column></Grid.Column>
-                <Grid.Column></Grid.Column>
                 <Grid.Column>
+                  {/* Discount Radio Button */}
                   <Radio
                     toggle
                     label={this.state.isPercentage ? "00" : "%"}
@@ -658,42 +689,32 @@ export class AddInvoice extends Component {
                   />
                 </Grid.Column>
                 <Grid.Column>
+                  {/* Discount Input */}
                   {this.state.isPercentage ? (
-                    <>
-                      <Form.Input
-                        label="Discount Percentage"
-                        type="number"
-                        fluid
-                        name="discount_percentage"
-                        value={discount_percentage}
-                        onChange={this.onDiscountChange}
-                        placeholder="Discount Percentage"
-                        disabled={!isPercentage} // Disable if value is active
-                      />{" "}
-                      %
-                    </>
+                    <Form.Input
+                      label="Discount Percentage"
+                      type="number"
+                      fluid
+                      name="discount_percentage"
+                      value={discount_percentage}
+                      onChange={this.onDiscountChange}
+                      placeholder="Discount Percentage"
+                      disabled={!isPercentage}
+                    />
                   ) : (
-                    <>
-                      <Form.Input
-                        label="Discount Value"
-                        type="number"
-                        fluid
-                        name="discount"
-                        value={discount}
-                        onChange={this.onDiscountChange}
-                        placeholder="Discount Value"
-                        visible={isPercentage} // Disable if percentage is active
-                      />{" "}
-                      AED
-                    </>
+                    <Form.Input
+                      label="Discount Value"
+                      type="number"
+                      fluid
+                      name="discount"
+                      value={discount}
+                      onChange={this.onDiscountChange}
+                      placeholder="Discount Value"
+                    />
                   )}
                 </Grid.Column>
-              </Grid.Row>
-              <Grid.Row columns={4} textAlign="right">
-                <Grid.Column></Grid.Column>
-                <Grid.Column></Grid.Column>
-                <Grid.Column></Grid.Column>
                 <Grid.Column>
+                  {/* Advance Payment Input */}
                   <Form.Input
                     label="Advance"
                     type="number"
@@ -705,8 +726,10 @@ export class AddInvoice extends Component {
                   />
                 </Grid.Column>
               </Grid.Row>
+
+              {/* Total Value Display */}
               <Grid.Row columns={2} textAlign="right">
-                <Grid.Column></Grid.Column>
+                <Grid.Column />
                 <Grid.Column>
                   <Statistic size="mini">
                     <Statistic.Value>
@@ -715,45 +738,65 @@ export class AddInvoice extends Component {
                     </Statistic.Value>
                     <Statistic.Label>Total Value</Statistic.Label>
                   </Statistic>
+                  <Icon
+                    color="green"
+                    name="refresh"
+                    onClick={this.recalculateTotal}
+                  />
                 </Grid.Column>
               </Grid.Row>
 
+              {/* Remarks and Delivery Date */}
               <Grid.Row columns={2}>
                 <Grid.Column>
-                  <Form.TextArea
-                    name="remarks"
-                    value={remarks}
-                    onChange={this.onChange}
-                    placeholder="Remarks"
-                  />
+                  <Segment>
+                    <Form.TextArea
+                      name="remarks"
+                      value={remarks}
+                      onChange={this.onChange}
+                      placeholder="Remarks"
+                    />
+                  </Segment>
                 </Grid.Column>
                 <Grid.Column>
-                  <Form.Input
-                    type="date"
+                  <Segment>
+                    <Form.Input
+                      type="date"
+                      fluid
+                      label="Delivery Date"
+                      name="delivery_date"
+                      value={delivery_date}
+                      onChange={this.onChange}
+                      placeholder="Delivery Date"
+                    />
+                  </Segment>
+                </Grid.Column>
+              </Grid.Row>
+
+              {/* Taxable Checkbox */}
+              <Grid.Row columns={1}>
+                <Grid.Column>
+                  <Segment>
+                    <Form.Checkbox
+                      toggle
+                      label="Is Taxable?"
+                      name="is_taxable"
+                      checked={is_taxable}
+                      onChange={this.onChange}
+                    />
+                  </Segment>
+                </Grid.Column>
+              </Grid.Row>
+
+              {/* Submit Button */}
+              <Grid.Row columns={1}>
+                <Grid.Column>
+                  <Button
+                    color="green"
                     fluid
-                    label="Delivery Date"
-                    name="delivery_date"
-                    value={delivery_date}
-                    onChange={this.onChange}
-                    placeholder="Delivery Date"
-                  />
-                </Grid.Column>
-              </Grid.Row>
-
-              <Grid.Row columns={1}>
-                <Grid.Column>
-                  <Form.Checkbox
-                    label="Is Taxable?"
-                    name="is_taxable"
-                    checked={is_taxable}
-                    onChange={this.onChange}
-                  />
-                </Grid.Column>
-              </Grid.Row>
-
-              <Grid.Row columns={1}>
-                <Grid.Column>
-                  <Button className="submit" onClick={this.onSubmit}>
+                    size="large"
+                    onClick={this.onSubmit}
+                  >
                     Submit
                   </Button>
                 </Grid.Column>

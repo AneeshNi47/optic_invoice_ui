@@ -69,6 +69,12 @@ export class SidebarMenu extends Component {
             Inventory
           </Menu.Item>
         </Link>
+        <Link to="/customers" onClick={() => this.props.sidebarToggle()}>
+          <Menu.Item>
+            <Icon name="users" />
+            Customers
+          </Menu.Item>
+        </Link>
       </>
     );
 

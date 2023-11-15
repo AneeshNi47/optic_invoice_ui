@@ -6,19 +6,27 @@ import {
   Table,
   Header,
   List,
+  Accordion,
   Segment,
 } from "semantic-ui-react";
 
-function InvoiceModal({ invoice, isOpen, onClose }) {
+function InvoiceModal({
+  invoice,
+  isOpen,
+  onClose,
+  activeIndex,
+  handleClick,
+  formatDate,
+}) {
   return (
-    <Modal open={isOpen} onClose={onClose} size="large" dimmer="blurring">
+    <Modal open={isOpen} onClose={onClose} size="fullscreen" dimmer="blurring">
       {invoice !== null ? (
         <>
           <Modal.Header>
             <Icon name="file alternate outline" /> Invoice Details -{" "}
             {invoice.invoice_number}
           </Modal.Header>
-          <Modal.Content scrolling>
+          <Modal.Content>
             <Segment color="blue">
               <List>
                 <List.Item>
@@ -118,13 +126,45 @@ function InvoiceModal({ invoice, isOpen, onClose }) {
               </Header>
               <p>{invoice.remarks}</p>
             </Segment>
+            <Segment>
+              <Accordion>
+                <Accordion.Title
+                  active={activeIndex === 0}
+                  index={0}
+                  onClick={handleClick}
+                >
+                  <Icon name="dropdown" />
+                  Payments
+                </Accordion.Title>
+                <Accordion.Content active={activeIndex === 0}>
+                  <List>
+                    {invoice.invoice_payment.map((payment, index) => (
+                      <List.Item>
+                        <List.Icon
+                          name={
+                            payment.payment_mode === "Cash"
+                              ? "money bill alternate"
+                              : payment.payment_mode === "Card"
+                              ? "credit card outline"
+                              : "dollar sign"
+                          }
+                        />
+                        <List.Content>
+                          <List.Header>{payment.amount}</List.Header>
+                          <List.Description>
+                            {formatDate(payment.created_on)}
+                          </List.Description>
+                        </List.Content>
+                      </List.Item>
+                    ))}
+                  </List>
+                </Accordion.Content>
+              </Accordion>
+            </Segment>
           </Modal.Content>
           <Modal.Actions>
             <Button color="red" onClick={onClose}>
               <Icon name="remove" /> Close
-            </Button>
-            <Button color="green">
-              <Icon name="checkmark" /> Approve
             </Button>
           </Modal.Actions>
         </>

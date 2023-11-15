@@ -7,7 +7,7 @@ export const printInvoice = (modelName, invoice_id, invoice_number) => {
   return async (dispatch, getState) => {
     return new Promise((resolve, reject) => {
       axios
-        .get(`${BASE_URL}/api/${modelName}/pdf/${invoice_id}`, {
+        .get(`${BASE_URL}/api/${modelName}/${invoice_id}`, {
           ...tokenConfig(getState),
           responseType: "blob",
         })

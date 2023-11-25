@@ -36,7 +36,7 @@ class ListCustomers extends Component {
     const { customers } = this.props;
     const { showDeleteModal, itemId } = this.state;
     return (
-      <>
+      < div className="customerlisttable">
         <Modal
           basic
           onClose={() => this.closeDeleteModal()}
@@ -153,7 +153,7 @@ class ListCustomers extends Component {
             ))}
           </Table.Body>
         </Table>
-      </>
+      </div>
     );
   }
 }

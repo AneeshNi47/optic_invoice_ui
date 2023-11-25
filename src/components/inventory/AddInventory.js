@@ -117,7 +117,7 @@ export class AddInventory extends Component {
       <>
         <Modal.Content>
           <Form>
-            <Grid>
+            <Grid padded stackable>
               <Grid.Row columns={2}>
                 <Grid.Column>
                   <Form.Input

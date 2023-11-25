@@ -10,8 +10,35 @@
   overflow: auto; /* Add this to handle overflow of content */
 }
 
-.main-content .footer {
+/* .main-content .footer {
   margin-left: 0 !important;
   padding-left: 0 !important;
   padding-right: 0 !important;
+} */
+
+.app-main-content{
+  padding: 0px 0px !important;
+  margin-top: 15px !important;
+}
+
+.ui[class*="top fixed"].menu{
+  padding: 0px 30px !important;
+}
+
+.footer{
+  padding: 20px 30px !important;
+}
+
+
+/* invoicedashboard */
+
+.invoicelisttable, .inventorylisttable, .customerlisttable{
+  padding: 10px;
+  margin-top: 20px;
+}
+
+@media screen and (max-width: 375px) {
+  .invoicelisttable, .inventorylisttable, .customerlisttable{
+    padding: 0px;
+  }
 }

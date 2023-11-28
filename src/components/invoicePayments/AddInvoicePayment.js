@@ -59,7 +59,6 @@ export class AddInvoicePayment extends Component {
       payment_type,
       payment_mode,
     };
-    console.log(invoice_payment_item);
     this.props.addItem("invoice-payment", ADD_ITEM, invoice_payment_item);
     this.setState({
       invoice_number: "",

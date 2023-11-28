@@ -36,11 +36,12 @@ export class AddInvoice extends Component {
     editCustomer: true,
     isPercentage: false,
     discount_percentage: 0.0,
+    tax_percentage: 5.0,
     searchValue: "",
     searchItemValue: "",
     loading: false,
     date: "",
-    is_taxable: true,
+    is_taxable: false,
     delivery_date: "",
     remarks: "",
     advance: 0.0,
@@ -108,7 +109,7 @@ export class AddInvoice extends Component {
   }
 
   onChange = (e) => this.setState({ [e.target.name]: e.target.value });
-  toggle_discount_type = (e) => { };
+  toggle_discount_type = (e) => {};
   handleAddItem = () => {
     const { selectedItem, items } = this.state;
     if (selectedItem && !items.includes(selectedItem)) {
@@ -117,6 +118,7 @@ export class AddInvoice extends Component {
         selectedItem: "",
       });
     }
+    this.recalculateTotal();
   };
 
   handleItemChange = (e, { value }) => {
@@ -193,7 +195,13 @@ export class AddInvoice extends Component {
   selectItemFromSearch = (e, data) => {
     const result_item = data.result.value;
     if (result_item && !this.state.items.includes(result_item)) {
-      var new_items = [...this.state.items, result_item];
+      const itemWithQty = {
+        ...result_item,
+        item_qty: 1,
+        item_price: result_item.sale_value,
+      }; // Assuming default quantity is 1
+
+      var new_items = [...this.state.items, itemWithQty];
       this.setState({
         items: new_items,
         total_value:
@@ -208,10 +216,17 @@ export class AddInvoice extends Component {
   };
 
   recalculateTotal = () => {
-    const { items, discount, discount_percentage, isPercentage, advance } =
-      this.state;
+    const {
+      items,
+      discount,
+      discount_percentage,
+      isPercentage,
+      advance,
+      tax_percentage,
+      is_taxable,
+    } = this.state;
     const itemsTotal = items.reduce(
-      (total, item) => total + parseFloat(item.sale_value),
+      (total, item) => total + parseFloat(item.sale_value) * item.item_qty,
       0
     );
     let discountAmount = parseFloat(discount) || 0;
@@ -220,6 +235,7 @@ export class AddInvoice extends Component {
     if (isPercentage) {
       // Calculate discount based on percentage
       discountAmount = (discount_percentage / 100) * itemsTotal;
+
       totalWithDiscount = itemsTotal - discountAmount;
     } else {
       // Discount is a flat value
@@ -228,7 +244,10 @@ export class AddInvoice extends Component {
 
     // Subtract any advance payments
     totalWithDiscount -= parseFloat(advance) || 0;
-
+    if (is_taxable) {
+      var tax_amount = (tax_percentage / 100) * totalWithDiscount;
+      totalWithDiscount -= parseFloat(tax_amount) || 0;
+    }
     this.setState({ total_value: totalWithDiscount.toFixed(2) });
   };
 
@@ -273,6 +292,13 @@ export class AddInvoice extends Component {
     this.recalculateTotal();
   };
 
+  onTaxPercentageChange = (e) => {
+    const { value } = e.target;
+    let tax_percentage = value;
+
+    this.setState({ tax_percentage: tax_percentage });
+    this.recalculateTotal();
+  };
   onAdvanceChange = (e) => {
     const newAdvance = e.target.value;
 
@@ -306,6 +332,38 @@ export class AddInvoice extends Component {
       },
     }));
   };
+  reduceItemQuantity = (item) => {
+    this.setState((prevState) => {
+      // Create a new array with updated quantities
+      const updatedItems = prevState.items.map((i) => {
+        if (i.id === item.id && i.item_qty > 1) {
+          // Assuming item_qty cannot go below 1
+          return { ...i, item_qty: i.item_qty - 1 };
+        }
+        return i;
+      });
+
+      return { items: updatedItems };
+    });
+  };
+
+  addItemQuantity = (item) => {
+    this.setState((prevState) => {
+      // Create a new array with updated quantities
+      const updatedItems = prevState.items.map((i) => {
+        if (i.id === item.id) {
+          return {
+            ...i,
+            item_qty: i.item_qty + 1,
+            item_price: item.sale_value,
+          };
+        }
+        return i;
+      });
+
+      return { items: updatedItems };
+    });
+  };
   onSubmit = (e) => {
     e.preventDefault();
     const {
@@ -316,12 +374,19 @@ export class AddInvoice extends Component {
       delivery_date,
       date,
       advance,
+      tax_percentage,
       discount,
+      is_taxable,
     } = this.state;
     var modified_customer = customer;
     if (modified_customer.id === null) {
       delete modified_customer.id;
     }
+    var selected_items = items.map((item) => ({
+      item_id: item.id,
+      item_qty: item.item_qty,
+    }));
+
     var invoice = {
       customer: modified_customer,
       prescription: prescription,
@@ -330,9 +395,12 @@ export class AddInvoice extends Component {
       remarks: remarks,
       advance: advance,
       discount: discount,
-      items: items.map((item) => item.id),
+      tax_percentage: tax_percentage,
+      is_taxable: is_taxable,
+      items: selected_items,
     };
-    this.props.addItem("invoice/create", ADD_INVOICE, invoice);
+    console.log(invoice);
+    //this.props.addItem("invoice/create", ADD_INVOICE, invoice);
     this.props.closeForm();
   };
 
@@ -359,6 +427,7 @@ export class AddInvoice extends Component {
       prescription_name,
       selectedCustomer,
       editModal,
+      tax_percentage,
     } = this.state;
     const { organization } = this.props;
     const prescriptionFields = [
@@ -403,7 +472,7 @@ export class AddInvoice extends Component {
             </Button>
           </Modal.Actions>
         </Modal>
-        <Modal.Content >
+        <Modal.Content>
           <Form>
             <Grid padded stackable>
               <Grid.Row columns={1}>
@@ -640,6 +709,8 @@ export class AddInvoice extends Component {
                       <Table.Row>
                         <Table.HeaderCell>Item</Table.HeaderCell>
                         <Table.HeaderCell>Description</Table.HeaderCell>
+                        <Table.HeaderCell>Rate</Table.HeaderCell>
+                        <Table.HeaderCell>Qty</Table.HeaderCell>
                         <Table.HeaderCell>Price</Table.HeaderCell>
                         <Table.HeaderCell>Action</Table.HeaderCell>
                       </Table.Row>
@@ -651,6 +722,24 @@ export class AddInvoice extends Component {
                           <Table.Cell>{item.name}</Table.Cell>
                           <Table.Cell>{item.description}</Table.Cell>
                           <Table.Cell>{item.sale_value}</Table.Cell>
+                          <Table.Cell>
+                            <Icon
+                              mini
+                              color="red"
+                              onClick={() => this.reduceItemQuantity(item)}
+                              name="minus"
+                            />
+                            {"        "}
+                            {item.item_qty}
+                            {"        "}
+                            <Icon
+                              mini
+                              color="green"
+                              onClick={() => this.addItemQuantity(item)}
+                              name="plus"
+                            />
+                          </Table.Cell>
+                          <Table.Cell>{item.total_price}</Table.Cell>
                           <Table.Cell>
                             <Button
                               color="red"
@@ -726,6 +815,24 @@ export class AddInvoice extends Component {
                   />
                 </Grid.Column>
               </Grid.Row>
+              {is_taxable ? (
+                <Grid.Row columns={3} textAlign="right">
+                  <Grid.Column></Grid.Column>
+                  <Grid.Column></Grid.Column>
+                  <Grid.Column>
+                    <Form.Input
+                      label="Tax Percentage"
+                      type="number"
+                      fluid
+                      name="tax_percentage"
+                      value={tax_percentage}
+                      onChange={this.onTaxPercentageChange}
+                      placeholder="Tax Percentage"
+                      disabled={!is_taxable}
+                    />
+                  </Grid.Column>
+                </Grid.Row>
+              ) : null}
 
               {/* Total Value Display */}
               <Grid.Row columns={2} textAlign="right">
@@ -782,7 +889,7 @@ export class AddInvoice extends Component {
                       label="Is Taxable?"
                       name="is_taxable"
                       checked={is_taxable}
-                      onChange={this.onChange}
+                      onChange={this.onToggleTax}
                     />
                   </Segment>
                 </Grid.Column>

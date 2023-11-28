@@ -92,6 +92,12 @@ class App extends React.Component {
                       <Container fluid>
                         <Routes>
                           <Route
+                            exact
+                            path="/register"
+                            element={<Register />}
+                          />
+                          <Route exact path="/login" element={<Login />} />
+                          <Route
                             path="/"
                             element={<PrivateRoute element={Dashboard} />}
                           />
@@ -119,12 +125,6 @@ class App extends React.Component {
                               <PrivateRoute element={CustomerDashboard} />
                             }
                           />
-                          <Route
-                            exact
-                            path="/register"
-                            element={<Register />}
-                          />
-                          <Route exact path="/login" element={<Login />} />
                         </Routes>
                       </Container>
                       <Divider />

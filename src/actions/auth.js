@@ -9,10 +9,8 @@ import {
   AUTH_ERROR,
   REGISTER_FAIL,
   GET_USERS,
-  GET_USER_ORGANIZATION,
 } from "./types";
 import { returnErrors } from "./messages";
-import { getOrganization } from "./other_operations";
 import { BASE_URL } from "./types";
 
 export const loadUser = () => (dispatch, getState) => {

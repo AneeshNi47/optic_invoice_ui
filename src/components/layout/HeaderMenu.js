@@ -28,27 +28,28 @@ export class PageHeader extends Component {
         </Menu.Menu>
       </>
     );
-    return (
-      <Menu fixed="top" inverted>
-        <Menu.Item header>
-          <Image
-            size="mini"
-            src="/optic_invoicer_icon2.png"
-            style={{ marginRight: "1.5em" }}
-          />
-          Optic Invoicer{"        "}
-        </Menu.Item>
-        {isAuthenticated ? (
-          <Menu.Item onClick={() => this.props.sidebarToggle()}>
-            <Icon name="right arrow" visible={this.props.sidebarVisible} />
+    if (isAuthenticated)
+      return (
+        <Menu fixed="top" inverted>
+          <Menu.Item header href="#">
+            <Image
+              size="mini"
+              src="/optic_invoicer_icon2.png"
+              style={{ marginRight: "1.5em" }}
+            />
+            Optic Invoicer{"        "}
           </Menu.Item>
-        ) : (
-          ""
-        )}
+          {isAuthenticated ? (
+            <Menu.Item onClick={() => this.props.sidebarToggle()}>
+              <Icon name="right arrow" visible={this.props.sidebarVisible} />
+            </Menu.Item>
+          ) : (
+            ""
+          )}
 
-        {isAuthenticated ? authLinks : guestLinks}
-      </Menu>
-    );
+          {isAuthenticated ? authLinks : guestLinks}
+        </Menu>
+      );
   }
 }
 

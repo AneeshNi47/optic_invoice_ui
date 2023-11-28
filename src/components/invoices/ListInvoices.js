@@ -58,15 +58,22 @@ class ListInvoices extends Component {
         />
 
         <Table singleLine color="teal" striped>
+          <Table.Header span={6}></Table.Header>
           <Table.Header>
             <Table.Row>
-              <Table.HeaderCell colSpan="4">
+              <Table.HeaderCell colSpan="3">
                 <Header as="h2" color="teal" textAlign="left">
                   <Icon name="file alternate outline" />
                   Invoices
                 </Header>
               </Table.HeaderCell>
-              <Table.HeaderCell colSpan="4" textAlign="right">
+              <Table.HeaderCell colSpan="1">
+                <Icon name="checkmark" color="green" />: Paid
+              </Table.HeaderCell>
+              <Table.HeaderCell colSpan="1">
+                <Icon name="checkmark" color="red" />: Taxable
+              </Table.HeaderCell>
+              <Table.HeaderCell colSpan="1" textAlign="right">
                 <Button
                   color="orange"
                   animated="vertical"
@@ -105,6 +112,11 @@ class ListInvoices extends Component {
                       ) : (
                         ""
                       )}{" "}
+                      {invoice.is_taxable ? (
+                        <Icon name="checkmark" color="red" />
+                      ) : (
+                        ""
+                      )}{" "}
                       <Header.Subheader>{invoice.date}</Header.Subheader>
                     </Header.Content>
                   </Header>
@@ -140,7 +152,9 @@ class ListInvoices extends Component {
                   {invoice.items.map((item, idx) => (
                     <p key={idx}>
                       <Icon
-                        name={item.item_type === "Lens" ? "eye" : "square full"}
+                        name={
+                          item.item_type === "Lens" ? "eye" : "square outline"
+                        }
                       />
                       {item.name}
                     </p>

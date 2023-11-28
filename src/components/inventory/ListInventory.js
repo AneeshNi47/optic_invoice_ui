@@ -36,7 +36,7 @@ class ListInventory extends Component {
     const { items } = this.props;
     const { showDeleteModal, itemId } = this.state;
     return (
-      <>
+      <div className="inventorylisttable">
         <Modal
           basic
           onClose={() => this.closeDeleteModal()}
@@ -136,7 +136,7 @@ class ListInventory extends Component {
             ))}
           </Table.Body>
         </Table>
-      </>
+      </div>
     );
   }
 }

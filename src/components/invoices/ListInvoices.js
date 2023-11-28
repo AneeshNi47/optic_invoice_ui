@@ -47,7 +47,7 @@ class ListInvoices extends Component {
     const { invoices } = this.props;
     const { showItem, invoiceData, activeIndex } = this.state;
     return (
-      <>
+      <div className="invoicelisttable">
         <InvoiceModal
           invoice={invoiceData}
           isOpen={showItem}
@@ -96,7 +96,7 @@ class ListInvoices extends Component {
           <Table.Body>
             {invoices.map((invoice, index) => (
               <Table.Row key={index}>
-                <Table.Cell textAlign="left">
+                <Table.Cell textAlign="center">
                   <Header as="h4" color="blue">
                     <Header.Content>
                       {invoice.invoice_number}
@@ -112,7 +112,7 @@ class ListInvoices extends Component {
                 <Table.Cell textAlign="center">
                   {invoice.delivery_date}
                 </Table.Cell>
-                <Table.Cell>{invoice.customer.first_name}</Table.Cell>
+                <Table.Cell textAlign="center">{invoice.customer.first_name}</Table.Cell>
                 <Table.Cell textAlign="center">
                   <Popup
                     trigger={
@@ -136,7 +136,7 @@ class ListInvoices extends Component {
                     inverted
                   />
                 </Table.Cell>
-                <Table.Cell>
+                <Table.Cell textAlign="center">
                   {invoice.items.map((item, idx) => (
                     <p key={idx}>
                       <Icon
@@ -222,7 +222,7 @@ class ListInvoices extends Component {
             </Table.Row>
           </Table.Footer>
         </Table>
-      </>
+      </div>
     );
   }
 }

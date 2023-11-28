@@ -108,7 +108,7 @@ export class AddInvoice extends Component {
   }
 
   onChange = (e) => this.setState({ [e.target.name]: e.target.value });
-  toggle_discount_type = (e) => {};
+  toggle_discount_type = (e) => { };
   handleAddItem = () => {
     const { selectedItem, items } = this.state;
     if (selectedItem && !items.includes(selectedItem)) {
@@ -403,9 +403,9 @@ export class AddInvoice extends Component {
             </Button>
           </Modal.Actions>
         </Modal>
-        <Modal.Content>
+        <Modal.Content >
           <Form>
-            <Grid padded>
+            <Grid padded stackable>
               <Grid.Row columns={1}>
                 <Grid.Column textAlign="center">
                   {organization ? (

@@ -56,7 +56,7 @@ class App extends React.Component {
         <Router>
           <Fragment>
             <Grid className="app-grid-container">
-              <Grid.Row>
+              <Grid.Row >
                 <Grid.Column>
                   <Segment basic>
                     <HeaderMenu
@@ -128,25 +128,25 @@ class App extends React.Component {
                         </Routes>
                       </Container>
                       <Divider />
-                      <Grid.Row style={{ padding: 0, margin: 0 }} columns={1}>
+                      <Grid.Row style={{ padding: 0, margin: 0 }} columns={1} >
                         <Grid.Column style={{ padding: 0, margin: 0 }}>
                           <Segment inverted>
                             <Grid divided inverted stackable>
-                              <Grid.Row columns={3}>
-                                <Grid.Column width={3}>
+                              <Grid.Row columns={3} className="footer">
+                                <Grid.Column width={5} className="aboutinfooter">
                                   <Header inverted as="h4" content="About" />
                                   <List link inverted>
                                     <List.Item as="a">Sitemap</List.Item>
                                     <List.Item as="a">Contact Us</List.Item>
                                   </List>
                                 </Grid.Column>
-                                <Grid.Column width={3}>
+                                <Grid.Column width={5} className="aboutinfooter">
                                   <Header inverted as="h4" content="Services" />
                                   <List link inverted>
                                     <List.Item as="a">FAQ</List.Item>
                                   </List>
                                 </Grid.Column>
-                                <Grid.Column width={7}>
+                                <Grid.Column width={6} className="aboutinfooter">
                                   <Header as="h4" inverted>
                                     An Application by Brocode Solutions FZ LLC
                                   </Header>

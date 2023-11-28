@@ -84,59 +84,113 @@ class Dashboard extends Component {
 
   render() {
     return (
-      <Container style={{ margin: "20px", padding: "20px" }}>
+      <div style={{ margin: "20px", padding: "20px" }}>
+        <div class="ui doubling two column centered grid">
+          <div class="four column centered row">
+            <div class="column">
+              <Card>
+                <Card.Header>Monthly Sales</Card.Header>
+                <Card.Body>
+                  <Bar data={this.monthlySalesData} />
+                </Card.Body>
+              </Card>
+            </div>
+            <div class="column">
+              <Card>
+                <Card.Header>Average Sale Value</Card.Header>
+                <Card.Body>
+                  <Line data={this.averageSaleValueData} />
+                </Card.Body>
+              </Card>
+            </div>
+          </div>
+          <div class="four column centered row">
+            <div class="column">
+              <Card>
+                <Card.Header>Sales by Category</Card.Header>
+                <Card.Body>
+                  <Pie data={this.salesCategoryData} />
+                </Card.Body>
+              </Card>
+
+            </div>
+            <div class="column">
+              <Card>
+                <Card.Header>Customer Demographics</Card.Header>
+                <Card.Body>
+                  <Doughnut data={this.customerDemographicsData} />
+                </Card.Body>
+              </Card>
+            </div>
+          </div>
+          <div class="four column centered row">
+            <div class="column">
+              <Card>
+                <Card.Header>Inventory Levels</Card.Header>
+                <Card.Body>
+                  <Bar data={this.inventoryData} />
+                </Card.Body>
+              </Card>
+
+            </div>
+            <div class="column">
+            </div>
+          </div>
+        </div>
+        {/* <Container style={{ margin: "20px", padding: "20px" }}> */}
         {/* Row 1: Three smaller charts */}
-        <Row>
-          <Col>
-            <Card>
-              <Card.Header>Monthly Sales</Card.Header>
-              <Card.Body>
-                <Bar data={this.monthlySalesData} />
-              </Card.Body>
-            </Card>
-          </Col>
-          <Col>
-            <Card>
-              <Card.Header>Sales by Category</Card.Header>
-              <Card.Body>
-                <Pie data={this.salesCategoryData} />
-              </Card.Body>
-            </Card>
-          </Col>
-          <Col>
-            <Card>
-              <Card.Header>Average Sale Value</Card.Header>
-              <Card.Body>
-                <Line data={this.averageSaleValueData} />
-              </Card.Body>
-            </Card>
-          </Col>
-        </Row>
+        {/* <Row>
+            <Col>
+              <Card>
+                <Card.Header>Monthly Sales</Card.Header>
+                <Card.Body>
+                  <Bar data={this.monthlySalesData} />
+                </Card.Body>
+              </Card>
+            </Col>
+            <Col>
+              <Card>
+                <Card.Header>Sales by Category</Card.Header>
+                <Card.Body>
+                  <Pie data={this.salesCategoryData} />
+                </Card.Body>
+              </Card>
+            </Col>
+            <Col>
+              <Card>
+                <Card.Header>Average Sale Value</Card.Header>
+                <Card.Body>
+                  <Line data={this.averageSaleValueData} />
+                </Card.Body>
+              </Card>
+            </Col>
+          </Row> */}
 
         {/* Row 2: Inventory chart */}
-        <Row>
-          <Col>
-            <Card>
-              <Card.Header>Inventory Levels</Card.Header>
-              <Card.Body>
-                <Bar data={this.inventoryData} />
-              </Card.Body>
-            </Card>
-          </Col>
-        </Row>
+        {/* <Row>
+            <Col>
+              <Card>
+                <Card.Header>Inventory Levels</Card.Header>
+                <Card.Body>
+                  <Bar data={this.inventoryData} />
+                </Card.Body>
+              </Card>
+            </Col>
+          </Row> */}
 
         {/* Row 3: Customer demographics chart */}
-        <Row>
-          <Col>
-            <Card>
-              <Card.Header>Customer Demographics</Card.Header>
-              <Card.Body>
-                <Doughnut data={this.customerDemographicsData} />
-              </Card.Body>
-            </Card>
-          </Col>
-        </Row>
-      </Container>
+        {/* <Row>
+            <Col>
+              <Card>
+                <Card.Header>Customer Demographics</Card.Header>
+                <Card.Body>
+                  <Doughnut data={this.customerDemographicsData} />
+                </Card.Body>
+              </Card>
+            </Col>
+          </Row>
+        </Container> */}
+      </div>
     );
   }
 }

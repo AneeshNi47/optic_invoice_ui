@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Container, Row, Col, Card } from "react-bootstrap";
+import { Card } from "react-bootstrap";
 import { Bar, Line, Pie, Doughnut } from "react-chartjs-2";
 import { Chart, registerables } from "chart.js";
 
@@ -112,7 +112,6 @@ class Dashboard extends Component {
                   <Pie data={this.salesCategoryData} />
                 </Card.Body>
               </Card>
-
             </div>
             <div class="column">
               <Card>
@@ -131,10 +130,8 @@ class Dashboard extends Component {
                   <Bar data={this.inventoryData} />
                 </Card.Body>
               </Card>
-
             </div>
-            <div class="column">
-            </div>
+            <div class="column"></div>
           </div>
         </div>
         {/* <Container style={{ margin: "20px", padding: "20px" }}> */}

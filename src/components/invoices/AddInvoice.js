@@ -16,6 +16,7 @@ import {
 } from "../../actions/types";
 import {
   Table,
+  Message,
   Input,
   Segment,
   Placeholder,
@@ -87,6 +88,8 @@ export class AddInvoice extends Component {
     total: null,
     selectedItem: {},
     items: [],
+    message: null,
+    showMessage: false,
   };
 
   static propTypes = {
@@ -175,6 +178,20 @@ export class AddInvoice extends Component {
     }
   };
 
+  resultRenderer = (item) => {
+    const isOutOfStock = item.qty <= 0;
+    const itemStyle = isOutOfStock ? { textDecoration: "line-through" } : {};
+
+    return (
+      <div>
+        <div style={itemStyle}>
+          <strong>{item.title}</strong>
+        </div>
+        <div>{item.description}</div>
+      </div>
+    );
+  };
+
   selectCustomerFromSearch = (e, data) => {
     const result_customer = data.result.value;
     this.setState({
@@ -194,24 +211,37 @@ export class AddInvoice extends Component {
 
   selectItemFromSearch = (e, data) => {
     const result_item = data.result.value;
-    if (result_item && !this.state.items.includes(result_item)) {
-      const itemWithQty = {
-        ...result_item,
-        item_qty: 1,
-        item_price: result_item.sale_value,
-      }; // Assuming default quantity is 1
-
-      var new_items = [...this.state.items, itemWithQty];
+    if (result_item.qty <= 0) {
       this.setState({
-        items: new_items,
-        total_value:
-          new_items.reduce(
-            (total, item) => total + parseFloat(item.sale_value),
-            0
-          ) -
-          this.state.advance -
-          this.state.discount,
+        message: `${result_item.name} is out of Stock`,
+        showMessage: true,
       });
+      setTimeout(() => {
+        this.setState({
+          message: null,
+          showMessage: false,
+        });
+      }, 5000);
+    } else {
+      if (result_item && !this.state.items.includes(result_item)) {
+        const itemWithQty = {
+          ...result_item,
+          item_qty: 1,
+          item_price: result_item.sale_value,
+        }; // Assuming default quantity is 1
+
+        var new_items = [...this.state.items, itemWithQty];
+        this.setState({
+          items: new_items,
+          total_value:
+            new_items.reduce(
+              (total, item) => total + parseFloat(item.sale_value),
+              0
+            ) -
+            this.state.advance -
+            this.state.discount,
+        });
+      }
     }
   };
 
@@ -348,21 +378,36 @@ export class AddInvoice extends Component {
   };
 
   addItemQuantity = (item) => {
-    this.setState((prevState) => {
-      // Create a new array with updated quantities
-      const updatedItems = prevState.items.map((i) => {
-        if (i.id === item.id) {
-          return {
-            ...i,
-            item_qty: i.item_qty + 1,
-            item_price: item.sale_value,
-          };
-        }
-        return i;
+    var available_qty = item.qty;
+    var new_added_qty = item.item_qty + 1;
+    if (available_qty - new_added_qty < 0) {
+      this.setState({
+        message: `${item.name} does not have enough Quantity`,
+        showMessage: true,
       });
+      setTimeout(() => {
+        this.setState({
+          message: null,
+          showMessage: false,
+        });
+      }, 5000);
+    } else {
+      this.setState((prevState) => {
+        // Create a new array with updated quantities
+        const updatedItems = prevState.items.map((i) => {
+          if (i.id === item.id) {
+            return {
+              ...i,
+              item_qty: i.item_qty + 1,
+              item_price: item.sale_value,
+            };
+          }
+          return i;
+        });
 
-      return { items: updatedItems };
-    });
+        return { items: updatedItems };
+      });
+    }
   };
   onSubmit = (e) => {
     e.preventDefault();
@@ -383,8 +428,8 @@ export class AddInvoice extends Component {
       delete modified_customer.id;
     }
     var selected_items = items.map((item) => ({
-      item_id: item.id,
-      item_qty: item.item_qty,
+      inventory_item: item.id,
+      quantity: item.item_qty,
     }));
 
     var invoice = {
@@ -397,10 +442,9 @@ export class AddInvoice extends Component {
       discount: discount,
       tax_percentage: tax_percentage,
       is_taxable: is_taxable,
-      items: selected_items,
+      inventory_items: selected_items,
     };
-    console.log(invoice);
-    //this.props.addItem("invoice/create", ADD_INVOICE, invoice);
+    this.props.addItem("invoice/create", ADD_INVOICE, invoice);
     this.props.closeForm();
   };
 
@@ -428,6 +472,8 @@ export class AddInvoice extends Component {
       selectedCustomer,
       editModal,
       tax_percentage,
+      showMessage,
+      message,
     } = this.state;
     const { organization } = this.props;
     const prescriptionFields = [
@@ -695,11 +741,24 @@ export class AddInvoice extends Component {
                     placeholder="Search Items"
                     onResultSelect={this.selectItemFromSearch}
                     onSearchChange={this.onSearchItemChange}
+                    resultRenderer={this.resultRenderer}
                     results={items_options}
                     value={searchItemValue}
                   />
                 </Grid.Column>
               </Grid.Row>
+              {showMessage ? (
+                <Grid.Row columns={1}>
+                  <Grid.Column>
+                    <Message negative>
+                      <Message.Header>{message}</Message.Header>
+                      <p>Modify or add the item in the Inventory</p>
+                    </Message>
+                  </Grid.Column>
+                </Grid.Row>
+              ) : (
+                ""
+              )}
 
               {/* Items Table */}
               <Grid.Row columns={1}>
@@ -756,7 +815,8 @@ export class AddInvoice extends Component {
                         <Table.Cell colSpan={2}>
                           {items.reduce(
                             (total, item) =>
-                              total + parseFloat(item.sale_value),
+                              total +
+                              parseFloat(item.sale_value * item.item_qty),
                             0
                           )}
                         </Table.Cell>

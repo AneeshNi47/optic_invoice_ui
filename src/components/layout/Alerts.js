@@ -24,6 +24,7 @@ export class Alerts extends Component {
 
     if (message !== prevProps.message) {
       if (message.itemAdded) toast.success(message.itemAdded);
+      if (message.itemUpdated) toast.success(message.itemUpdated);
       if (message.itemDeleted) toast.success(message.itemDeleted);
     }
   }

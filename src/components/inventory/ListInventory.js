@@ -71,7 +71,7 @@ class ListInventory extends Component {
             </Button>
           </Modal.Actions>
         </Modal>
-        <Table singleLine>
+        <Table sortable className="non-stacking-table">
           <Table.Header>
             <Table.Row>
               <Table.HeaderCell colSpan="5">
@@ -102,7 +102,7 @@ class ListInventory extends Component {
 
           <Table.Body>
             {items.map((item, index) => (
-              <Table.Row key={index}>
+              <Table.Row key={index} color="red">
                 <Table.Cell textAlign="center">{item.SKU}</Table.Cell>
                 <Table.Cell textAlign="center">{item.name}</Table.Cell>
                 <Table.Cell textAlign="center">{item.qty}</Table.Cell>

@@ -124,7 +124,9 @@ class ListInvoices extends Component {
                 <Table.Cell textAlign="center">
                   {invoice.delivery_date}
                 </Table.Cell>
-                <Table.Cell textAlign="center">{invoice.customer.first_name}</Table.Cell>
+                <Table.Cell textAlign="center">
+                  {invoice.customer.first_name}
+                </Table.Cell>
                 <Table.Cell textAlign="center">
                   <Popup
                     trigger={
@@ -149,14 +151,16 @@ class ListInvoices extends Component {
                   />
                 </Table.Cell>
                 <Table.Cell textAlign="center">
-                  {invoice.items.map((item, idx) => (
+                  {invoice.inventory_items.map((item, idx) => (
                     <p key={idx}>
                       <Icon
                         name={
-                          item.item_type === "Lens" ? "eye" : "square outline"
+                          item.inventory_item.item_type === "Lens"
+                            ? "eye"
+                            : "square outline"
                         }
                       />
-                      {item.name}
+                      {item.inventory_item.name}
                     </p>
                   ))}
                 </Table.Cell>

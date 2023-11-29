@@ -35,7 +35,7 @@ class ListInvoicePayments extends Component {
 
   render() {
     const { invoice_payments } = this.props;
-    const { showDeleteModal, paymentId } = this.state;
+    const { showDeleteModal } = this.state;
     return (
       <>
         <Modal

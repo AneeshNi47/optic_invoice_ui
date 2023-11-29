@@ -81,7 +81,7 @@ export class SidebarMenu extends Component {
     const default_menu = (
       <>
         <Menu.Item>
-          <Icon name="cross" />
+          <Icon name="close" />
           Invalid
         </Menu.Item>
       </>
@@ -89,14 +89,12 @@ export class SidebarMenu extends Component {
 
     switch (this.props.user_type) {
       case "admin":
-        console.log(this.props.user_type);
         return super_admin_menu;
       case "staff":
         return org_staff_menu;
       case "superstaff":
         return org_admin_menu;
       default:
-        console.log(this.props.user_type);
         return default_menu;
     }
   }

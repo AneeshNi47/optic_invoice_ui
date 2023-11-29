@@ -25,9 +25,10 @@ export default function (state = initialState, action) {
         search_results.push({
           key: result.id,
           value: result,
-          title: `${result.name} ${result.description}`,
-          descriptions: `${result.first_name} ${result.phone}`,
-          text: `${result.first_name} ${result.phone}`,
+          title: `${result.store_sku} ${result.qty}`,
+          descriptions: `${result.description}`,
+          text: `${result.store_sku}`,
+          qty: `${result.qty}`,
         })
       );
       return {

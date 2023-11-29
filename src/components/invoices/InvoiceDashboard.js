@@ -11,7 +11,7 @@ import { Modal } from "semantic-ui-react";
 
 class InvoiceDashboard extends Component {
   state = {
-    addLeadForm: false,
+    addInvoiceForm: false,
     addPaymentForm: false,
     listPaymentsModal: false,
     formOpenType: "view",
@@ -24,13 +24,13 @@ class InvoiceDashboard extends Component {
     addItem: PropTypes.func.isRequired,
   };
   onOpenForm = (data) =>
-    this.setState({ addLeadForm: true, invoice_data: data });
+    this.setState({ addInvoiceForm: true, invoice_data: data });
   onOpenPaymentList = (data) =>
     this.setState({ listPaymentsModal: true, invoice_data: data });
   onOpenPaymentForm = (data) =>
     this.setState({ addPaymentForm: true, invoice_data: data });
 
-  handleClose = () => this.setState({ addLeadForm: false });
+  handleClose = () => this.setState({ addInvoiceForm: false });
   handlePaymentListClose = () => this.setState({ listPaymentsModal: false });
   handlePaymentFormClose = () => this.setState({ addPaymentForm: false });
 
@@ -40,7 +40,7 @@ class InvoiceDashboard extends Component {
     });
   render() {
     const {
-      addLeadForm,
+      addInvoiceForm,
       addPaymentForm,
       invoice_data,
       formOpenType,
@@ -55,7 +55,11 @@ class InvoiceDashboard extends Component {
           setFormType={(type) => this.setFormType(type)}
         />
 
-        <Modal size="fullscreen" open={addLeadForm} onClose={this.handleClose}>
+        <Modal
+          size="fullscreen"
+          open={addInvoiceForm}
+          onClose={this.handleClose}
+        >
           <AddInvoice
             closeForm={this.handleClose}
             data={invoice_data}
@@ -68,7 +72,7 @@ class InvoiceDashboard extends Component {
           onClose={this.handlePaymentFormClose}
         >
           <AddInvoicePayment
-            closeForm={this.handleClose}
+            closeForm={this.handlePaymentFormClose}
             data={invoice_data}
             formOpenType={formOpenType}
             addItem={this.props.addItem}

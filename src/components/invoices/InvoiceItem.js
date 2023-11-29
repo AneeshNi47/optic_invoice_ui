@@ -70,11 +70,11 @@ function InvoiceModal({
                 </Table.Row>
               </Table.Header>
               <Table.Body>
-                {invoice.items.map((item) => (
-                  <Table.Row key={item.id}>
-                    <Table.Cell>{item.name}</Table.Cell>
-                    <Table.Cell>{item.description}</Table.Cell>
-                    <Table.Cell>{item.qty}</Table.Cell>
+                {invoice.inventory_items.map((item) => (
+                  <Table.Row key={item.inventory_item.id}>
+                    <Table.Cell>{item.inventory_item.name}</Table.Cell>
+                    <Table.Cell>{item.inventory_item.description}</Table.Cell>
+                    <Table.Cell>{item.quantity}</Table.Cell>
                     <Table.Cell>${item.sale_value}</Table.Cell>
                   </Table.Row>
                 ))}

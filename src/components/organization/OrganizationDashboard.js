@@ -16,6 +16,7 @@ class OrganizationDashboard extends Component {
   static propTypes = {
     user: PropTypes.object.isRequired,
     get_users: PropTypes.func.isRequired,
+    addItem: PropTypes.func.isRequired,
   };
   onOpenForm = (data) =>
     this.setState({ addOrganizationForm: true, editOrganizationData: data });

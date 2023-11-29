@@ -13,6 +13,7 @@ import { Form, Grid, Modal, Button, Select } from "semantic-ui-react";
 
 export class AddInventory extends Component {
   state = {
+    isMobile: window.innerWidth <= 600,
     store_sku: "",
     name: "",
     description: "",
@@ -31,7 +32,6 @@ export class AddInventory extends Component {
   };
   componentDidMount() {
     const { data } = this.props;
-    console.log(data);
     if (data !== null) {
       this.setState({
         store_sku: data.store_sku,
@@ -44,7 +44,16 @@ export class AddInventory extends Component {
         item_type: data.item_type,
       });
     }
+    window.addEventListener("resize", this.handleResize);
   }
+
+  componentWillUnmount() {
+    window.removeEventListener("resize", this.handleResize);
+  }
+
+  handleResize = () => {
+    this.setState({ isMobile: window.innerWidth <= 600 });
+  };
 
   onChange = (e) => {
     this.setState({ [e.target.name]: e.target.value });
@@ -115,7 +124,9 @@ export class AddInventory extends Component {
     ];
     return (
       <>
-        <Modal.Content>
+        <Modal.Content
+          style={this.state.isMobile ? { width: "100%", margin: "0" } : {}}
+        >
           <Form>
             <Grid padded stackable>
               <Grid.Row columns={2}>
@@ -209,7 +220,13 @@ export class AddInventory extends Component {
 
               <Grid.Row columns={1}>
                 <Grid.Column>
-                  <Button className="submit" onClick={this.onSubmit}>
+                  <Button
+                    positive
+                    className={`submit ${
+                      this.state.isMobile ? "mobile-submit" : ""
+                    }`}
+                    onClick={this.onSubmit}
+                  >
                     {this.props.data ? "Update" : "Add"}
                   </Button>
                 </Grid.Column>

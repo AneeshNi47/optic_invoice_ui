@@ -43,28 +43,40 @@ class AddOrganization extends Component {
   };
 
   handleChange = (e, { name, value }) => {
-    const keys = name.split(".");
-    if (keys.length === 1) {
-      this.setState({ [name]: value });
-    } else if (keys.length === 2) {
-      const [section, key] = keys;
+    if (e.target.type === "file") {
+      // For file inputs, use the file itself instead of `value`
+      const file = e.target.files[0];
       this.setState((prevState) => ({
-        [section]: {
-          ...prevState[section],
-          [key]: value,
+        ...prevState,
+        organization: {
+          ...prevState.organization,
+          [name.split(".")[1]]: file,
         },
       }));
-    } else if (keys.length === 3) {
-      const [section, subSection, key] = keys;
-      this.setState((prevState) => ({
-        [section]: {
-          ...prevState[section],
-          [subSection]: {
-            ...prevState[section][subSection],
+    } else {
+      const keys = name.split(".");
+      if (keys.length === 1) {
+        this.setState({ [name]: value });
+      } else if (keys.length === 2) {
+        const [section, key] = keys;
+        this.setState((prevState) => ({
+          [section]: {
+            ...prevState[section],
             [key]: value,
           },
-        },
-      }));
+        }));
+      } else if (keys.length === 3) {
+        const [section, subSection, key] = keys;
+        this.setState((prevState) => ({
+          [section]: {
+            ...prevState[section],
+            [subSection]: {
+              ...prevState[section][subSection],
+              [key]: value,
+            },
+          },
+        }));
+      }
     }
   };
 
@@ -85,6 +97,7 @@ class AddOrganization extends Component {
       organization,
       staff,
     };
+    console.log(organization_item);
     if (data) {
       this.props.updateItem(
         "create_organization",
@@ -93,7 +106,7 @@ class AddOrganization extends Component {
         organization_item
       );
     } else {
-      console.log(organization_item);
+      this.props.addItem("create_organization", ADD_ITEM, organization_item);
     }
 
     this.setState({
@@ -215,6 +228,14 @@ class AddOrganization extends Component {
               onChange={this.handleChange}
             />
           </Form.Group>
+          <Form.Group>
+            <Form.Input
+              type="file"
+              label="Organization Logo"
+              name="organization.logo"
+              onChange={this.handleChange}
+            />
+          </Form.Group>
 
           <h2>Staff Details</h2>
           <Form.Group widths="equal">
@@ -268,8 +289,4 @@ class AddOrganization extends Component {
   }
 }
 
-const mapDispatchToProps = (dispatch) => ({
-  // createOrganization: data => dispatch(createOrganization(data))
-});
-
-export default connect(null, mapDispatchToProps)(AddOrganization);
+export default connect(null, { addItem })(AddOrganization);

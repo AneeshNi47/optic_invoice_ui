@@ -23,9 +23,9 @@ export class Alerts extends Component {
     }
 
     if (message !== prevProps.message) {
-      if (message.leadAdded) toast.success(message.leadAdded);
-      if (message.leadDeleted) toast.success(message.leadDeleted);
-      if (message.qrCodeDeleted) toast.success(message.qrCodeDeleted);
+      if (message.itemAdded) toast.success(message.itemAdded);
+      if (message.itemUpdated) toast.success(message.itemUpdated);
+      if (message.itemDeleted) toast.success(message.itemDeleted);
     }
   }
   render() {

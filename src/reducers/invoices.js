@@ -15,7 +15,7 @@ export default function (state = initialState, action) {
     case GET_INVOICES:
       return {
         ...state,
-        invoices: action.payload,
+        invoices: action.payload.results,
       };
     case ADD_INVOICE:
       return {

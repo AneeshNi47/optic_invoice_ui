@@ -17,11 +17,11 @@ export default function (state = initialState, action) {
     case GET_ITEMS:
       return {
         ...state,
-        items: action.payload,
+        items: action.payload.results,
       };
     case SEARCH_INVENTORY:
       let search_results = [];
-      action.payload.map((result) =>
+      action.payload.results.map((result) =>
         search_results.push({
           key: result.id,
           value: result,

@@ -17,7 +17,7 @@ export default function (state = initialState, action) {
     case GET_CUSTOMERS:
       return {
         ...state,
-        customers: action.payload,
+        customers: action.payload.results,
       };
     case ADD_CUSTOMER:
       return {
@@ -26,7 +26,7 @@ export default function (state = initialState, action) {
       };
     case SEARCH_CUSTOMERS:
       let search_results = [];
-      action.payload.map((result) =>
+      action.payload.results.map((result) =>
         search_results.push({
           key: result.id,
           value: result,

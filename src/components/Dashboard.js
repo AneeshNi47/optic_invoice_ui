@@ -85,9 +85,9 @@ class Dashboard extends Component {
   render() {
     return (
       <div style={{ margin: "20px", padding: "20px" }}>
-        <div class="ui doubling two column centered grid">
-          <div class="four column centered row">
-            <div class="column">
+        <div>
+          <div className="four column centered row">
+            <div className="column">
               <Card>
                 <Card.Header>Monthly Sales</Card.Header>
                 <Card.Body>
@@ -95,7 +95,7 @@ class Dashboard extends Component {
                 </Card.Body>
               </Card>
             </div>
-            <div class="column">
+            <div className="column">
               <Card>
                 <Card.Header>Average Sale Value</Card.Header>
                 <Card.Body>
@@ -104,8 +104,8 @@ class Dashboard extends Component {
               </Card>
             </div>
           </div>
-          <div class="four column centered row">
-            <div class="column">
+          <div className="four column centered row">
+            <div className="column">
               <Card>
                 <Card.Header>Sales by Category</Card.Header>
                 <Card.Body>
@@ -113,7 +113,7 @@ class Dashboard extends Component {
                 </Card.Body>
               </Card>
             </div>
-            <div class="column">
+            <div className="column">
               <Card>
                 <Card.Header>Customer Demographics</Card.Header>
                 <Card.Body>
@@ -122,8 +122,8 @@ class Dashboard extends Component {
               </Card>
             </div>
           </div>
-          <div class="four column centered row">
-            <div class="column">
+          <div className="four column centered row">
+            <div className="column">
               <Card>
                 <Card.Header>Inventory Levels</Card.Header>
                 <Card.Body>
@@ -131,7 +131,7 @@ class Dashboard extends Component {
                 </Card.Body>
               </Card>
             </div>
-            <div class="column"></div>
+            <div className="column"></div>
           </div>
         </div>
         {/* <Container style={{ margin: "20px", padding: "20px" }}> */}
